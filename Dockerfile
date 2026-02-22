@@ -5,9 +5,9 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir ansible-core jmespath && \
-    ansible-galaxy collection install community.general
+    ansible-galaxy collection install community.general ansible.posix
 
-RUN useradd -r -s /usr/sbin/nologin ansible
+RUN useradd -r -m -s /bin/bash ansible
 USER ansible
 
 ENTRYPOINT ["ansible-playbook"]
