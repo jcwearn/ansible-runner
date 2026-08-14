@@ -21,4 +21,7 @@ jobs:
           context: .
           push: false
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # ignore-error=true is not cosmetic: the GHA cache export hitting the
+          # quota is what failed the release build seven times running, and this
+          # job is one quota event from the same fate.
+          cache-to: type=gha,mode=max,ignore-error=true

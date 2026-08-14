@@ -1,23 +1,29 @@
 name: Require Release Label
 
+# Calls the shared check in jcwearn/workflows, so the label vocabulary is
+# defined in one place rather than drifting between repos. The version this
+# replaces accepted any `release:*` suffix and fed it to a case statement with
+# no default arm, so a typo became "bump nothing" and then died on a duplicate
+# tag -- reading as a flaky release rather than a mislabelled PR.
+#
+# release:skip is part of that vocabulary now, so a docs-only or CI-only PR has
+# a way out that is not "forget the label and go red after the merge."
+#
+# Two trigger details that are load-bearing:
+#
+#   branches: [main] -- the previous version had no branch filter and ran on
+#     PRs targeting any branch.
+#
+#   edited -- fires when a PR's base branch changes. Without it a stacked PR
+#     retargeted onto main after its parent merges never runs this check at
+#     all, because every earlier event was filtered out while the base was
+#     still the parent branch.
+
 on:
   pull_request:
-    types: [opened, labeled, unlabeled, synchronize]
+    types: [opened, reopened, edited, labeled, unlabeled, synchronize]
+    branches: [main]
 
 jobs:
-  check-label:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check for release label
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
-        with:
-          script: |
-            const labels = context.payload.pull_request.labels.map(l => l.name);
-            const releaseLabels = labels.filter(l => l.startsWith('release:'));
-            if (releaseLabels.length === 0) {
-              core.setFailed('PR must have a release label: release:major, release:minor, or release:patch');
-            } else if (releaseLabels.length > 1) {
-              core.setFailed('PR must have exactly one release label, found: ' + releaseLabels.join(', '));
-            } else {
-              core.info('Release label found: ' + releaseLabels[0]);
-            }
+  check:
+    uses: jcwearn/workflows/.github/workflows/require-release-label.yaml@v1
