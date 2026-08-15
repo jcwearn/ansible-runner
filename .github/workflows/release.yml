@@ -28,7 +28,7 @@ jobs:
     permissions:
       contents: write # git tag + GitHub Release
       packages: write # push to GHCR
-    uses: jcwearn/workflows/.github/workflows/release.yaml@v1
+    uses: jcwearn/workflows/.github/workflows/release.yaml@623f2a008cb8a83ab2bc1868631aa0486ed84bd6 # v1
     with:
       # Literal rather than ${{ github.repository_owner }} so the image name
       # stays greppable from k3s-cluster, which is the only reason anyone
