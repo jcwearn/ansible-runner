@@ -1,5 +1,14 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": ["local>jcwearn/renovate-config"],
-    "addLabels": ["release:patch"]
+    "addLabels": ["release:patch"],
+    "packageRules": [
+        {
+            "description": "Python version bumps get their own PR so an ansible-core incompatibility doesn't block other updates",
+            "matchDatasources": ["docker"],
+            "matchPackageNames": ["python"],
+            "matchUpdateTypes": ["major", "minor"],
+            "groupName": "python"
+        }
+    ]
 }
